@@ -141,6 +141,15 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
         }
       }
   })
+    .state('tabs.mypoll', {
+      url: '/polls/my',
+      views : {
+        'polls-tab': {
+          templateUrl: 'views/poll/my.html',
+          controller: 'MyPollCtrl'
+        }
+      }
+    })
   .state('tabs.issues', {
     url: '/issues',
     views: {

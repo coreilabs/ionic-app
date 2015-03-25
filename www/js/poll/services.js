@@ -175,13 +175,24 @@ maybe use some or every. The use of break can be good for a performance point of
       return getRootPath(pollid).child('stats');
     }
 
+    function getPollsByUser(user){
+      return pollCrud. find(
+        {
+          user: ParseUtils.toPointer('_User', user)
+        }, '&order=createdAt'
+      ).then(function(polls){
+        return polls;
+      });
+    }
+
   return {
   	setPollsData : setPollsData,
   	getPollsAround : getPollsAround,
     saveAnswer : saveAnswer,
     getAnswers : getAnswers,
     hasUserAlreadyVoted : hasUserAlreadyVoted,
-    getAnwsersForPolls : getAnwsersForPolls
+    getAnwsersForPolls : getAnwsersForPolls,
+    getPollsByUser : getPollsByUser
   };
 
 

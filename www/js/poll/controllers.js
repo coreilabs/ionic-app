@@ -22,7 +22,6 @@ angular.module('app')
   fn.getAroundPolls = function(lastUpdate){
   	return PollSrv.getPollsAround().then(function(polls){
       fn.getAnswers(polls);
-
     });
   };
     //get Answers for active polls
@@ -34,9 +33,6 @@ angular.module('app')
         $scope.loadingAnswers = false;
         $scope.polls = result;
         $scope.lastUpdated = Date.now();
-
-        console.log(result);
-
       });
     };
 
@@ -128,4 +124,20 @@ angular.module('app')
         });
       });
     };
-});
+})
+  .controller('MyPollCtrl', function(PollSrv, UserSrv, $scope){
+    'use strict';
+    var fn = {};
+    $scope.fn = fn;
+
+    UserSrv.getCurrent().then(function(user) {
+      fn.init(user);
+    });
+
+    fn.init = function(user){
+      $scope.user = user;
+      PollSrv.getPollsByUser(user).then(function(polls){
+        $scope.polls = polls;
+      });
+    };
+  });
