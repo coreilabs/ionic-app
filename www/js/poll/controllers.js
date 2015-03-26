@@ -175,8 +175,9 @@ angular.module('app')
     fn.remove = function(poll){
       $scope.deleting = true;
       PollSrv.remove(poll).then(function(result){
-        $scope.deleting = false;
-        console.log('Result : ', result);
+        if(result === false){
+          alert('Erreur');
+        }
         $state.go('tabs.mypoll');
       });
     };

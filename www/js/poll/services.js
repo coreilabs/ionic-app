@@ -196,10 +196,18 @@ maybe use some or every. The use of break can be good for a performance point of
     }
 
     function remove(poll){
-      return pollCrud.remove(poll).then(function(result){
-          return result
+      return UserSrv.getCurrent().then(function(user){
+        if(poll.user.objectId === user.objectId){
+          return pollCrud.remove(poll).then(function(result){
+            return result;
+          });
+        }else{
+          return false;
         }
-      );
+
+      });
+
+
     }
 
     function getIndexBy$Id(poll, choiceId){
