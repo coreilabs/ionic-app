@@ -179,10 +179,44 @@ maybe use some or every. The use of break can be good for a performance point of
       return pollCrud. find(
         {
           user: ParseUtils.toPointer('_User', user)
-        }, '&order=createdAt'
+        }, '&order=-createdAt'
       ).then(function(polls){
         return polls;
       });
+    }
+
+    function getPollById(pollId){
+      return pollCrud.find(
+        {
+          objectId : pollId
+        }
+      ).then(function(poll){
+          return poll[0]
+        });
+    }
+
+    function remove(poll){
+      return pollCrud.remove(poll).then(function(result){
+          return result
+        }
+      );
+    }
+
+    function getIndexBy$Id(poll, choiceId){
+      return  _.findIndex(poll.answersStats,function(chr){ return chr.$id == choiceId;});
+    }
+
+    function getValue(array, index){
+      if(index < 0){
+        return 0;
+      }
+      return array[index].$value;
+    }
+
+    function getPercent (poll, choiceid){
+      var nbVotes = getValue(poll.answersStats,getIndexBy$Id(poll, choiceid));
+      var totalVotes = getValue(poll.answersStats,getIndexBy$Id(poll, 'totalVotes'));
+      return parseInt( (nbVotes / totalVotes) * 100);
     }
 
   return {
@@ -192,7 +226,12 @@ maybe use some or every. The use of break can be good for a performance point of
     getAnswers : getAnswers,
     hasUserAlreadyVoted : hasUserAlreadyVoted,
     getAnwsersForPolls : getAnwsersForPolls,
-    getPollsByUser : getPollsByUser
+    getPollsByUser : getPollsByUser,
+    getPollById : getPollById,
+    getIndexBy$Id : getIndexBy$Id,
+    getValue : getValue,
+    getPercent : getPercent,
+    remove : remove
   };
 
 

@@ -1,0 +1,17 @@
+<ion-view title="Détail du sondage" class="polls">
+  <ion-content class="padding">
+    <loading ng-show="initiated === false || deleting === true" top="100px"></loading>
+    {{poll.question}}
+    <label class="item item-radio choice" ng-repeat="(index,choice) in poll.choices">
+      <div class="item-content containerValuePercent">
+        <p class="choiceValue">{{choice.value}}</p>
+        <div class="percentBar choice_{{index}}" style=" width : {{fn.getPercent(poll, choice.id)}}%; ">
+               <span class="badge" ng-if="fn.getValue(poll.answersStats,fn.getIndexBy$Id(poll, choice.id)) > 0">
+                 {{fn.getValue(poll.answersStats,fn.getIndexBy$Id(poll, choice.id))}}
+               </span>
+        </div>
+      </div>
+    </label>
+    <button class="button button-block button-assertive" ng-click="fn.remove(poll)">Supprimer</button>
+  </ion-content>
+</ion-view>

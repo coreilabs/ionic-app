@@ -67,24 +67,20 @@ angular.module('app')
       fn.init();
     });
 
-  fn.getIndexBy$Id = function(poll, choiceId){
-    return  _.findIndex(poll.answersStats,function(chr){ return chr.$id == choiceId;});
-  };
-
-  fn.getValue = function(array, index){
-    if(index < 0){
-      return 0;
-    }
-    return array[index].$value;
-  };
     fn.create = function(){
       $state.go('tabs.pollcreate');
     };
 
+  fn.getIndexBy$Id = function(poll, choiceId){
+    return  PollSrv.getIndexBy$Id(poll, choiceId);
+  };
+
+  fn.getValue = function(array, index){
+    return PollSrv.getValue(array, index);
+  };
+
     fn.getPercent = function(poll, choiceid){
-      var nbVotes = fn.getValue(poll.answersStats,fn.getIndexBy$Id(poll, choiceid));
-      var totalVotes = fn.getValue(poll.answersStats,fn.getIndexBy$Id(poll, 'totalVotes'));
-      return parseInt( (nbVotes / totalVotes) * 100);
+      return PollSrv.getPercent(poll, choiceid);
   };
 
 })
@@ -129,6 +125,7 @@ angular.module('app')
     'use strict';
     var fn = {};
     $scope.fn = fn;
+    $scope.initiated = false;
 
     UserSrv.getCurrent().then(function(user) {
       fn.init(user);
@@ -137,7 +134,62 @@ angular.module('app')
     fn.init = function(user){
       $scope.user = user;
       PollSrv.getPollsByUser(user).then(function(polls){
+        $scope.initiated = true;
         $scope.polls = polls;
       });
+    };
+
+    $scope.$on('$ionicView.enter', function() {
+      $scope.initiated = false;
+      $scope.polls = {};
+      UserSrv.getCurrent().then(function(user) {
+        fn.init(user);
+      });
+    });
+  })
+  .controller('PollCtrl', function(PollSrv,UserSrv, $scope, $stateParams, $state){
+    'use strict';
+    var fn = {};
+    $scope.fn = fn;
+    $scope.initiated = false;
+
+    UserSrv.getCurrent().then(function(user){
+      fn.init(user);
+    });
+
+    fn.init = function(user){
+      $scope.user = user;
+      fn.getDetails($stateParams.poll);
+    };
+
+    fn.getDetails = function(pollId){
+      PollSrv.getPollById(pollId).then(function(poll){
+        $scope.initiated = true;
+        $scope.poll = poll;
+        PollSrv.getAnswers(poll, $scope.user).then(function(result){
+          $scope.poll = result;
+        })
+      });
+    };
+
+    fn.remove = function(poll){
+      $scope.deleting = true;
+      PollSrv.remove(poll).then(function(result){
+        $scope.deleting = false;
+        console.log('Result : ', result);
+        $state.go('tabs.mypoll');
+      });
+    };
+
+    fn.getIndexBy$Id = function(poll, choiceId){
+      return  PollSrv.getIndexBy$Id(poll, choiceId);
+    };
+
+    fn.getValue = function(array, index){
+      return PollSrv.getValue(array, index);
+    };
+
+    fn.getPercent = function(poll, choiceid){
+      return PollSrv.getPercent(poll, choiceid);
     };
   });

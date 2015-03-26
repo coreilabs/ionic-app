@@ -1,7 +1,10 @@
 <ion-view title="Mes sonsages">
   <ion-content class="padding">
-    <div ng-repeat="poll in polls">
-      {{poll.question}}
+    <loading ng-show="initiated === false" top="100px"></loading>
+    <div class="list" ng-repeat="poll in polls">
+      <a class="item" ui-sref="tabs.poll({poll : poll.objectId})">{{poll.question}}
+        <span class="badge badge-assertive">10</span>
+      </a>
     </div>
   </ion-content>
 </ion-view>
