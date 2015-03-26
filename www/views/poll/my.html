@@ -1,9 +1,11 @@
-<ion-view title="Mes sonsages">
+<ion-view title="Mes sondages">
   <ion-content class="padding">
     <loading ng-show="initiated === false" top="100px"></loading>
+    <div ng-show="polls.length === 0 && initiated === true">Vous n'avez pas de sondage</div>
     <div class="list" ng-repeat="poll in polls">
       <a class="item" ui-sref="tabs.poll({poll : poll.objectId})">{{poll.question}}
-        <span class="badge badge-assertive">10</span>
+        <small class="pull-left" am-time-ago="poll.createdAt"></small>
+        <span class="badge badge-assertive">{{fn.getValue(poll.answersStats,fn.getIndexBy$Id(poll, 'totalVotes'))}}</span>
       </a>
     </div>
   </ion-content>

@@ -136,9 +136,18 @@ angular.module('app')
       PollSrv.getPollsByUser(user).then(function(polls){
         $scope.initiated = true;
         $scope.polls = polls;
+        PollSrv.getAnwsersForPolls(polls, $scope.user).then(function(result){
+          $scope.polls = result;
+        })
       });
     };
+    fn.getIndexBy$Id = function(poll, choiceId){
+      return  PollSrv.getIndexBy$Id(poll, choiceId);
+    };
 
+    fn.getValue = function(array, index){
+      return PollSrv.getValue(array, index);
+    };
     $scope.$on('$ionicView.enter', function() {
       $scope.initiated = false;
       $scope.polls = {};
@@ -164,11 +173,16 @@ angular.module('app')
 
     fn.getDetails = function(pollId){
       PollSrv.getPollById(pollId).then(function(poll){
-        $scope.initiated = true;
-        $scope.poll = poll;
-        PollSrv.getAnswers(poll, $scope.user).then(function(result){
-          $scope.poll = result;
-        })
+        if(poll !== undefined){
+          $scope.initiated = true;
+          $scope.poll = poll;
+          PollSrv.getAnswers(poll, $scope.user).then(function(result){
+            $scope.poll = result;
+          });
+        }else{
+          //!TODO How to deal with error?
+          alert('Erreur');
+        }
       });
     };
 

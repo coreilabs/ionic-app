@@ -2,7 +2,7 @@
   <ion-content class="padding">
     <loading ng-show="initiated === false || deleting === true" top="100px"></loading>
     {{poll.question}}
-    <label class="item item-radio choice" ng-repeat="(index,choice) in poll.choices">
+    <label class="item  choice" ng-repeat="(index,choice) in poll.choices">
       <div class="item-content containerValuePercent">
         <p class="choiceValue">{{choice.value}}</p>
         <div class="percentBar choice_{{index}}" style=" width : {{fn.getPercent(poll, choice.id)}}%; ">
