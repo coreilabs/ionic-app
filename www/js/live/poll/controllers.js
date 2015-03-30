@@ -79,6 +79,10 @@ angular.module('app')
     return PollSrv.getValue(array, index);
   };
 
+    fn.create = function(){
+      $state.go('app.live.pollcreate');
+    };
+
     fn.getPercent = function(poll, choiceid){
       return PollSrv.getPercent(poll, choiceid);
   };
@@ -116,7 +120,7 @@ angular.module('app')
       poll.choices = $scope.choices;
       UserSrv.getCurrent().then(function(user){
         PollSrv.setPollsData(poll, user).then(function(result){
-          $state.go('tabs.polls')
+          $state.go('app.live.polls')
         });
       });
     };

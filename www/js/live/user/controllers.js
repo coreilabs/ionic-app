@@ -44,21 +44,6 @@ angular.module('app')
   });
 })
 
-.controller('ContactsCtrl', function($scope, RelationsSrv, UsersSrv){
-  'use strict';
-  var data = {};
-  $scope.data = data;
-  data.users = null;
-
-  $scope.$on('$ionicView.enter', function(){
-    RelationsSrv.getContactsIds().then(function(ids){
-      return UsersSrv.getAll(ids);
-    }).then(function(users){
-      data.users = users;
-    });
-  });
-})
-
 .controller('UserCtrl', function($scope, $state, $stateParams, $timeout, $ionicScrollDelegate, UserSrv, UsersSrv, RelationsSrv, PrivateMessageSrv, RealtimeSrv, ToastPlugin){
   'use strict';
   var userId = $stateParams.id;
@@ -91,7 +76,7 @@ angular.module('app')
           if($stateParams.section){ $timeout(function(){scrollTo($stateParams.section);}, 100); }
         });
       } else {
-        $state.go('tabs.users');
+        $state.go('app.live.users');
       }
     });
   });

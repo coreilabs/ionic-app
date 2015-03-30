@@ -51,20 +51,33 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
     }
   })
 
-  .state('tabs', {
-    url: '/tabs',
+  .state('app', {
+    url: '/app',
     abstract: true,
-    templateUrl: 'views/tabs.html',
-    controller: 'TabsCtrl',
+    templateUrl: 'views/menu.html',
+    controller: 'SidemenuCtrl',
     data: {
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.users', {
+  .state('app.live', {
+    url: '/tabs',
+    abstract: true,
+    views: {
+      'menuContent': {
+        templateUrl: 'views/live/tabs.html',
+        controller: 'TabsCtrl',
+      }
+    },
+    data: {
+      restrictAccess: ['logged']
+    }
+  })
+  .state('app.live.users', {
     url: '/users',
     views: {
       'users-tab': {
-        templateUrl: 'views/user/users.html',
+        templateUrl: 'views/live/user/users.html',
         controller: 'UsersCtrl'
       }
     },
@@ -72,23 +85,11 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.contacts', {
-    url: '/contacts',
-    views: {
-      'users-tab': {
-        templateUrl: 'views/user/contacts.html',
-        controller: 'ContactsCtrl'
-      }
-    },
-    data: {
-      restrictAccess: ['logged']
-    }
-  })
-  .state('tabs.user', {
+  .state('app.live.user', {
     url: '/user/:id?section',
     views: {
       'users-tab': {
-        templateUrl: 'views/user/user.html',
+        templateUrl: 'views/live/user/user.html',
         controller: 'UserCtrl'
       }
     },
@@ -96,11 +97,11 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.chats', {
+  .state('app.live.chats', {
     url: '/chats',
     views: {
       'chats-tab': {
-        templateUrl: 'views/chat/chats.html',
+        templateUrl: 'views/live/chat/chats.html',
         controller: 'ChatsCtrl'
       }
     },
@@ -108,11 +109,11 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.chat', {
+  .state('app.live.chat', {
     url: '/chat/:id',
     views: {
       'chats-tab': {
-        templateUrl: 'views/chat/chat.html',
+        templateUrl: 'views/live/chat/chat.html',
         controller: 'ChatCtrl'
       }
     },
@@ -120,11 +121,11 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.polls', {
+  .state('app.live.polls', {
     url: '/polls',
     views: {
       'polls-tab': {
-        templateUrl: 'views/poll/polls.html',
+        templateUrl: 'views/live/poll/polls.html',
         controller: 'PollsCtrl'
       }
     },
@@ -132,14 +133,17 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       restrictAccess: ['logged']
     }
   })
-  .state('tabs.pollcreate', {
+  .state('app.live.pollcreate', {
     url: '/polls/create',
-      views : {
-        'polls-tab': {
-          templateUrl: 'views/poll/create.html',
-          controller: 'PollCreationCtrl'
-        }
+    views : {
+      'polls-tab': {
+        templateUrl: 'views/live/poll/create.html',
+        controller: 'PollCreationCtrl'
       }
+    },
+    data: {
+      restrictAccess: ['logged']
+    }
   })
     .state('tabs.mypoll', {
       url: '/polls/my',
@@ -159,12 +163,37 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
         }
       }
     })
-  .state('tabs.issues', {
-    url: '/issues',
-    views: {
-      'issues-tab': {
-        templateUrl: 'views/issue/issues.html',
-        controller: 'IssuesCtrl'
+
+  .state('app.profile', {
+    url: '/profile',
+    views : {
+      'menuContent': {
+        templateUrl: 'views/profile/details.html',
+        controller: 'ProfileCtrl'
+      }
+    },
+    data: {
+      restrictAccess: ['logged']
+    }
+  })
+  .state('app.profileEdit', {
+    url: '/profile-edit',
+    views : {
+      'menuContent': {
+        templateUrl: 'views/profile/edit.html',
+        controller: 'ProfileEditCtrl'
+      }
+    },
+    data: {
+      restrictAccess: ['logged']
+    }
+  })
+  .state('app.contacts', {
+    url: '/contacts',
+    views : {
+      'menuContent': {
+        templateUrl: 'views/profile/contacts.html',
+        controller: 'ContactsCtrl'
       }
     },
     data: {
@@ -194,7 +223,7 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
       if(logged && restricted.indexOf('notLogged') > -1){
         event.preventDefault();
         $log.log('IllegalAccess', 'State <'+toState.name+'> is restricted to non logged users !');
-        $state.go('tabs.users');
+        $state.go('app.live.users');
       } else if(!logged && restricted.indexOf('logged') > -1){
         event.preventDefault();
         $log.log('IllegalAccess', 'State <'+toState.name+'> is restricted to logged users !');
@@ -209,7 +238,7 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
         user.push = {
           id: registrationId,
           platform: ionic.Platform.platform()
-        }
+        };
         return UserSrv.setCurrent(user);
       }
     });
