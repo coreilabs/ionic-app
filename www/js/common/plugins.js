@@ -666,7 +666,7 @@ angular.module('app')
 
 
 // for Push plugin : https://github.com/phonegap-build/PushPlugin
-.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config, $ionicPlatform){
+.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config, $ionicPlatform,$cordovaMedia){
   'use strict';
   var pluginName = 'Push';
   var pluginTest = function(){ return $window.plugins && $window.plugins.pushNotification; };
@@ -741,7 +741,11 @@ angular.module('app')
 
   function onNotification(callback, _type){
     var id = callbackCurRef++;
+    console.log("callback ", callback);
+      console.log('type : ', _type);
+
     PluginUtils.onReady(pluginName, pluginTest).then(function(){
+      console.log("service : ", service.type.MESSAGE);
       callbackList[id] = {fn: callback, type: _type || service.type.MESSAGE};
     });
     return id;
@@ -771,10 +775,11 @@ angular.module('app')
       if(event.alert) {
         navigator.notification.alert(event.alert);
       }
-      if(event.sound) {
-        var snd = new Media(event.sound);
+      /*if(event.sound) {
+
+        var snd = $cordovaMedia.newMedia(event.sound);
         snd.play();
-      }
+      }*/
       if(event.badge) {
         setApplicationIconBadgeNumber(event.badge);
       }
