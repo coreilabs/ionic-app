@@ -141,12 +141,15 @@ angular.module('app')
     data.loading = true;
     data.error = null;
     UserSrv.login(credentials).then(function(){
+      console.log('logged');
       $ionicHistory.nextViewOptions({disableBack:true});
       $state.go('app.live.users');
       data.credentials.password = '';
       data.loading = false;
       data.error = null;
+      console.log('logged');
     }, function(err){
+      console.log('error login : ', err);
       data.credentials.password = '';
       data.loading = false;
       data.error = err.message ? err.message : err;

@@ -99,6 +99,7 @@ angular.module('app')
   function login(credentials){
     if(credentials.email && credentials.password){
       return ParseUtils.login(credentials.email, credentials.password).then(function(user){
+        console.log("Parse login OK");
         return _initAfterLogin(user);
       }, function(err){
         return err && err.data && err.data.error ? $q.reject({message: err.data.error}) : $q.reject(err);
@@ -126,11 +127,12 @@ angular.module('app')
     userCrud = ParseUtils.createUserCrud(user.sessionToken);
     AuthSrv.setToken(user.sessionToken);
     delete user.sessionToken;
-
+    console.log("init AfterLogin");
     return $q.all([
       PushPlugin.register(Config.gcm.projectNumber),
       GeolocationPlugin.getCurrentPosition()
     ]).then(function(results){
+      console.log('$q.all success');
       var registrationId = results[0];
       var pos = results[1];
       user.push = {
@@ -146,7 +148,10 @@ angular.module('app')
           return user;
         });
       });
-    });
+    },function (error) {
+      console.log('error initAfterLogin : ', error);
+    }
+    );
   }
 
   function passwordRecover(credentials){

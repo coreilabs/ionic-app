@@ -666,7 +666,7 @@ angular.module('app')
 
 
 // for Push plugin : https://github.com/phonegap-build/PushPlugin
-.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config){
+.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config, $ionicPlatform){
   'use strict';
   var pluginName = 'Push';
   var pluginTest = function(){ return $window.plugins && $window.plugins.pushNotification; };
@@ -706,10 +706,35 @@ angular.module('app')
         defer.resolve(notification.regid);
         cancel(callbackRef);
       }, service.type.REGISTERED);
-      $window.plugins.pushNotification.register(function(data){}, function(err){ defer.reject(err); }, {
+
+      /*$window.plugins.pushNotification.register(function(data){}, function(err){ defer.reject(err); }, {
         senderID: projectNumber,
         ecb: 'onPushNotification'
-      });
+      });*/
+        console.log('Platform : ',$ionicPlatform.is('android'));
+        if($ionicPlatform.is('android')){
+
+          $window.plugins.pushNotification.register(function() { }, function() { }, {
+            senderID: projectNumber,
+            ecb: 'onPushNotification'
+          });
+        } else {
+          $window.plugins.pushNotification.register(function(token) {
+            // Successfully registered device.
+            console.log("token : ", token);
+            defer.resolve(token);
+          }, function(error) {
+            // Failed to register device.
+            console.log("failed to register device : ", error);
+          }, {
+            alert : 'true',
+            badge : 'true',
+            sound : 'true',
+            ecb   : 'onNotificationAPN'
+          });
+        }
+
+
       return defer.promise;
     });
   }
@@ -741,6 +766,19 @@ angular.module('app')
     }
   };
 
+    $window.onNotificationAPN = function(event) {
+      console.log('notif APN  :', event);
+      if(event.alert) {
+        navigator.notification.alert(event.alert);
+      }
+      if(event.sound) {
+        var snd = new Media(event.sound);
+        snd.play();
+      }
+      if(event.badge) {
+        setApplicationIconBadgeNumber(event.badge);
+      }
+    };
   // iOS only
   function setApplicationIconBadgeNumber(badgeNumber){
     return PluginUtils.onReady(pluginName, pluginTest).then(function(){
