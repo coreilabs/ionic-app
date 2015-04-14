@@ -128,6 +128,7 @@ angular.module('app')
     AuthSrv.setToken(user.sessionToken);
     delete user.sessionToken;
     console.log("init AfterLogin");
+    var instalation = ParseUtils.createCrud("_Installation");
     return $q.all([
       PushPlugin.register(Config.gcm.projectNumber),
       GeolocationPlugin.getCurrentPosition()
@@ -144,10 +145,16 @@ angular.module('app')
       user.active = true;
 
       return userCrud.save(user).then(function(){
-        return StorageUtils.set(storageKey, user).then(function(){
+        //!TODO Manage Android / Web / iOS
+        return instalation.save({
+          deviceType : 'ios',
+          deviceToken : registrationId,
+          user: ParseUtils.toPointer('_User', user)
+        }).then(function(){
+          return StorageUtils.set(storageKey, user).then(function(){
           return user;
         });
-      });
+      })});
     },function (error) {
       console.log('error initAfterLogin : ', error);
     }

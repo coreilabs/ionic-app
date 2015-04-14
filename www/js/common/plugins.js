@@ -771,7 +771,13 @@ angular.module('app')
   };
 
     $window.onNotificationAPN = function(event) {
-      console.log('notif APN  :', event);
+      var defer = $q.defer();
+      onNotification(function(event){
+        console.log("Log event/notif : ", event);
+        defer.resolve(event);
+      }, service.type.ALL);
+      //console.log('notif APN  :', event);
+
       if(event.alert) {
         navigator.notification.alert(event.alert);
       }
@@ -781,11 +787,16 @@ angular.module('app')
         snd.play();
       }*/
       if(event.badge) {
-        setApplicationIconBadgeNumber(event.badge);
+        $window.setApplicationIconBadgeNumber(event.badge);
+      }
+      for(var i in callbackList){
+        if(callbackList[i].type === service.type.ALL || callbackList[i].type === event){
+          callbackList[i].fn(notification);
+        }
       }
     };
   // iOS only
-  function setApplicationIconBadgeNumber(badgeNumber){
+ $window.setApplicationIconBadgeNumber = function(badgeNumber){
     return PluginUtils.onReady(pluginName, pluginTest).then(function(){
       var defer = $q.defer();
       $window.plugins.pushNotification.setApplicationIconBadgeNumber(function(a,b,c){

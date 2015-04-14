@@ -345,8 +345,11 @@ angular.module('app', ['ionic', 'ngCordova', 'LocalForageModule', 'angularMoment
     });
   });
   PushPlugin.onNotification(function(notification){
+    console.log('Ça reçoit : ', notification);
     NotificationSrv.received(notification);
   });
+
+
 
   $rootScope.safeApply = function(fn){
     var phase = this.$root ? this.$root.$$phase : this.$$phase;

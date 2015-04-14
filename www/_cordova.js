@@ -349,4 +349,8 @@ ionic.Platform.ready(function(){
     };
 
   } // end if(!ionic.Platform.isWebView()){
+  else {
+    window.cordova.plugins.Keyboard.disableScroll(true);
+    window.cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+  }
 });

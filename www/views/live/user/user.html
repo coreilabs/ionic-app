@@ -66,7 +66,7 @@
   </ion-content>
 
   <form ng-submit="fn.sendMessage()" ng-if="fn.isAccepted(data.relation)">
-    <ion-footer-bar class="item-input-inset">
+    <ion-footer-bar class="item-input-inset" keyboard-attach>
       <label class="item-input-wrapper">
         <i class="icon ion-chatboxes placeholder-icon"></i>
         <input type="text" placeholder="Ton message ..." ng-model="data.message">
