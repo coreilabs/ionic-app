@@ -664,9 +664,29 @@ angular.module('app')
   return service;
 })
 
+.factory('PushTest', function(ParseUtils){
+    function sendPushIos(recipients, data){
+      var installationCrud = ParseUtils.createCrud('installations');
+      return installationCrud.save({
+          user: ParseUtils.toPointer('_User', recipients),
+          data : data
 
+
+          }
+      ).then(function(result){
+
+          console.log('Les installations trouvées : ', result);
+
+
+        });
+
+    }
+    return {
+      sendPushIos : sendPushIos
+    }
+  })
 // for Push plugin : https://github.com/phonegap-build/PushPlugin
-.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config, $ionicPlatform,$cordovaMedia){
+.factory('PushPlugin', function($q, $http, $window, $log, PluginUtils, Config, $ionicPlatform, NotificationSrv){
   'use strict';
   var pluginName = 'Push';
   var pluginTest = function(){ return $window.plugins && $window.plugins.pushNotification; };
@@ -684,6 +704,8 @@ angular.module('app')
     onNotification: onNotification,
     cancel: cancel
   };
+
+
 
   // This function is not part of the plugin, you should implement it here !!!
   function sendPush(recipients, data){
@@ -771,16 +793,13 @@ angular.module('app')
   };
 
     $window.onNotificationAPN = function(event) {
-      var defer = $q.defer();
-      onNotification(function(event){
-        console.log("Log event/notif : ", event);
-        defer.resolve(event);
-      }, service.type.ALL);
+      NotificationSrv.received(event);
+
       //console.log('notif APN  :', event);
 
-      if(event.alert) {
+      /*if(event.alert) {
         navigator.notification.alert(event.alert);
-      }
+      }*/
       /*if(event.sound) {
 
         var snd = $cordovaMedia.newMedia(event.sound);

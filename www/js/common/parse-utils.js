@@ -44,7 +44,15 @@ angular.module('app')
 
     function createCrud(objectClass, _processBreforeSave, _useCache){
       // objectClass should by like : MyObject
-      var endpointUrl = parseUrl+'/classes/'+objectClass;
+      if(objectClass === "push"){
+        var endpointUrl = parseUrl+'/push';
+
+      }else if (objectClass === "installations") {
+        var endpointUrl = parseUrl + '/functions/getInstallations'
+      }else{
+        var endpointUrl = parseUrl+'/classes/'+objectClass;
+      }
+
       var service = CrudRestUtils.createCrud(endpointUrl, parseObjectKey, getParseData, _processBreforeSave, _useCache, parseHttpConfig);
       service.savePartial = function(objectToSave, dataToUpdate){
         var objectId = typeof objectToSave === 'string' ? objectToSave : objectToSave[parseObjectKey];

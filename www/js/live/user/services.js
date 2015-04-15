@@ -1,6 +1,6 @@
 angular.module('app')
 
-.factory('UserSrv', function($q, AuthSrv, ParseUtils, StorageUtils, LocalStorageUtils, GeolocationPlugin, PushPlugin, Config){
+.factory('UserSrv', function($q, AuthSrv, ParseUtils, StorageUtils, LocalStorageUtils, GeolocationPlugin, PushPlugin, Config, $ionicPlatform){
   'use strict';
   var storageKey = 'user';
   var userCrud = ParseUtils.createUserCrud(AuthSrv.getToken());
@@ -146,15 +146,23 @@ angular.module('app')
 
       return userCrud.save(user).then(function(){
         //!TODO Manage Android / Web / iOS
-        return instalation.save({
-          deviceType : 'ios',
-          deviceToken : registrationId,
-          user: ParseUtils.toPointer('_User', user)
-        }).then(function(){
-          return StorageUtils.set(storageKey, user).then(function(){
-          return user;
+        if($ionicPlatform.is('ios')){
+          return instalation.save({
+            deviceType : 'ios',
+            deviceToken : registrationId,
+            user: ParseUtils.toPointer('_User', user)
+          }).then(function(){
+            return StorageUtils.set(storageKey, user).then(function(){
+              return user;
+            })
+
         });
-      })});
+
+      }else{
+          return StorageUtils.set(storageKey, user).then(function(){
+            return user;
+          })
+        }});
     },function (error) {
       console.log('error initAfterLogin : ', error);
     }

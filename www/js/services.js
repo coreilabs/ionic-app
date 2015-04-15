@@ -66,7 +66,7 @@ angular.module('app')
   return service;
 })
 
-.factory('NotificationSrv', function($state, $q, PushPlugin, DialogPlugin, ToastPlugin){
+.factory('NotificationSrv', function($state, $q, DialogPlugin, ToastPlugin, PushTest){
   'use strict';
   var service = {
     sendInvite: sendInvite,
@@ -81,7 +81,8 @@ angular.module('app')
       type: 'relation_invite',
       userId: fromUser.objectId,
       title: 'Invitation reçue',
-      message: fromUser.pseudo+' vous invite à le rencontrer'
+      message: fromUser.pseudo+' vous invite à le rencontrer',
+      alert : fromUser.pseudo+' vous invite à le rencontrer'
     });
   }
 
@@ -113,16 +114,15 @@ angular.module('app')
   }
 
   function received(notification){
-    var data = notification.payload;
+    console.log('notification recue : ', notification);
+    var data = notification;
     if(['relation_invite', 'relation_accept', 'relation_decline'].indexOf(data.type) > -1){
-      if(notification.foreground){
+
         DialogPlugin.confirmMulti(data.message, data.title, ['Voir profil', 'Ignorer']).then(function(btnIndex){
           if(btnIndex === 1){ $state.go('app.live.user', {id: data.userId}); }
           else if(btnIndex === 2){}
         });
-      } else {
-        $state.go('app.live.user', {id: data.userId});
-      }
+      
     } else if(data.type === 'private_message'){
       if(notification.foreground){
         if($state.is('app.live.user', {id: data.userId}) || $state.is('app.live.user', {id: data.userId, section: 'chat'})){
@@ -152,10 +152,13 @@ angular.module('app')
   function _sendPush(toUser, data){
     // data should contains at least 'type', 'title' & 'message' fields !
     if(toUser && toUser.push && toUser.push.id && toUser.push.platform === 'android'){
-      return PushPlugin.sendPush([toUser.push.id], data);
+     // return PushPlugin.sendPush([toUser.push.id], data);
     } else {
+      console.log('Envoie la notif à ', toUser);
+      console.log('avec le content : ', data);
+      return PushTest.sendPushIos(toUser, data);
       console.log('no able to push to user', toUser);
-      return $q.when();
+      //return $q.when();
     }
   }
 

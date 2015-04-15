@@ -60,3 +60,29 @@ Parse.Cloud.afterSave('PublicMessage', function(request){
     error: function(object, error){}
   });
 });
+
+Parse.Cloud.define("getInstallations", function(request, response) {
+  Parse.Cloud.useMasterKey();
+  var query = new Parse.Query("_Installation");
+  //query.equalTo("movie", request.params.movie);
+  query.equalTo("user",request.params.user);
+  query.find({
+    success: function(results) {
+      Parse.Push.send({
+        where: query,
+        data : request.params.data
+      }, { success: function(results) {
+        response.success("ça a marché ?");
+        response.success(results);
+        // success!
+      }, error: function(err) {
+        response.error(err);
+      }
+      });
+      response.success(results);
+    },
+    error: function(error) {
+      response.error(error);
+    }
+  });
+});
