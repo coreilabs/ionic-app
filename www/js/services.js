@@ -109,7 +109,8 @@ angular.module('app')
       type: 'private_message',
       userId: fromUser.objectId,
       title: 'Message de '+fromUser.pseudo,
-      message: message
+      message: message,
+      alert : 'Message de '+fromUser.pseudo + ' : ' + message
     });
   }
 
@@ -122,7 +123,7 @@ angular.module('app')
           if(btnIndex === 1){ $state.go('app.live.user', {id: data.userId}); }
           else if(btnIndex === 2){}
         });
-      
+
     } else if(data.type === 'private_message'){
       if(notification.foreground){
         if($state.is('app.live.user', {id: data.userId}) || $state.is('app.live.user', {id: data.userId, section: 'chat'})){
